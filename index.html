@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StyleSync — Personal Wardrobe & Outfit Synchronization</title>
+  <!-- Elegant Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Playfair+Display:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <script src="index.js"></script>
+</head>
+<body>
+  <!-- NAVIGATION -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand-logo" onclick="navigateTo('home')">
+        <span class="logo-mark">✧</span>
+        <span class="logo-text">Style<span>Sync</span></span>
+      </div>
+      <nav class="nav-links" id="navLinks">
+        <a href="#home" class="nav-item active" onclick="navigateTo('home')">Home</a>
+        <a href="#wardrobe" class="nav-item" onclick="navigateTo('wardrobe')">My Wardrobe</a>
+        <a href="#stylesync" class="nav-item" onclick="navigateTo('stylesync')">StyleSync</a>
+        <a href="#checklist" class="nav-item" onclick="navigateTo('checklist')">Checklist</a>
+        <a href="#favorites" class="nav-item" onclick="navigateTo('favorites')">Favorites</a>
+        <a href="#profile" class="nav-item" onclick="navigateTo('profile')">Profile</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="btn btn-gold" onclick="openAddModal()">＋ Add Item</button>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- NOTIFICATION TOAST -->
+    <div id="toastNotification" class="toast hidden"></div>
+
+    <!-- 1. HOME SECTION -->
+    <section id="view-home" class="page-view active">
+      <div class="hero-section">
+        <div class="hero-badge">Smart Personal Stylist</div>
+        <h1 class="hero-title">Your Wardrobe. Your Style. <span class="text-gold">Perfectly Synced.</span></h1>
+        <p class="hero-subtitle">Upload what you own. Let StyleSync understand your wardrobe and coordinate the ideal outfit for any occasion.</p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary" onclick="openAddModal()">Upload My Wardrobe</button>
+          <button class="btn btn-secondary" onclick="navigateTo('stylesync')">Start Styling</button>
+        </div>
+      </div>
+
+      <!-- Live Dynamic Statistics -->
+      <div class="stats-grid">
+        <div class="stat-card" onclick="navigateTo('wardrobe')">
+          <div class="stat-icon">👗</div>
+          <div class="stat-value" id="homeWardrobeCount">0</div>
+          <div class="stat-label">Wardrobe Items</div>
+        </div>
+        <div class="stat-card" onclick="navigateTo('checklist')">
+          <div class="stat-icon">✨</div>
+          <div class="stat-value" id="homeSyncedCount">0</div>
+          <div class="stat-label">Synced Outfits</div>
+        </div>
+        <div class="stat-card" onclick="navigateTo('favorites')">
+          <div class="stat-icon">♡</div>
+          <div class="stat-value" id="homeFavoritesCount">0</div>
+          <div class="stat-label">Favorites</div>
+        </div>
+      </div>
+
+      <!-- How it Works -->
+      <div class="info-container">
+        <div class="section-heading text-center">
+          <h2>The StyleSync Journey</h2>
+          <p>StyleSync only styles what you already own — never pushing external shopping products.</p>
+        </div>
+        <div class="steps-grid">
+          <div class="step-card">
+            <span class="step-number">01</span>
+            <h3>Upload & Detect</h3>
+            <p>Upload your tops, pants, dresses, footwear, and accessories. AI tags colors, fabrics, and aesthetics.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-number">02</span>
+            <h3>Select Occasion</h3>
+            <p>Choose where you're heading — Office, College, Wedding, Dinner, Date, or a casual day out.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-number">03</span>
+            <h3>Sync & Coordinate</h3>
+            <p>StyleSync pairs colors, textures, and items with a precision compatibility score.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo Data Toggle -->
+      <div class="demo-bar">
+        <span>Want to quickly test the application without manual uploads?</span>
+        <div class="demo-buttons">
+          <button class="btn btn-sm btn-outline" onclick="loadDemoWardrobe()">Load Demo Wardrobe</button>
+          <button class="btn btn-sm btn-ghost" onclick="clearDemoWardrobe()">Clear Demo Data</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. MY WARDROBE SECTION -->
+    <section id="view-wardrobe" class="page-view">
+      <div class="section-header">
+        <div>
+          <h2>My Wardrobe</h2>
+          <p>Every confirmed piece in your digital closet.</p>
+        </div>
+        <button class="btn btn-gold" onclick="openAddModal()">＋ Add Wardrobe Item</button>
+      </div>
+
+      <!-- Filter and Search Bar -->
+      <div class="filter-bar">
+        <div class="category-tabs" id="wardrobeCategoryTabs">
+          <button class="filter-tab active" data-category="All">All</button>
+          <button class="filter-tab" data-category="Clothing">Clothing</button>
+          <button class="filter-tab" data-category="Footwear">Footwear</button>
+          <button class="filter-tab" data-category="Handbags">Handbags</button>
+          <button class="filter-tab" data-category="Jewelry">Jewelry</button>
+          <button class="filter-tab" data-category="Accessories">Accessories</button>
+        </div>
+        <div class="search-wrap">
+          <input type="text" id="wardrobeSearchInput" placeholder="Search by name, color, style..." />
+        </div>
+      </div>
+
+      <!-- Wardrobe Items Grid -->
+      <div class="wardrobe-grid" id="wardrobeGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- 3. STYLESYNC GENERATOR SECTION -->
+    <section id="view-stylesync" class="page-view">
+      <div class="sync-container">
+        <div class="section-heading text-center">
+          <div class="hero-badge">Outfit Synchronization Model</div>
+          <h2>What are you dressing for?</h2>
+          <p>Choose an occasion to analyze your wardrobe compatibility.</p>
+        </div>
+
+        <!-- Occasion Selector -->
+        <div class="occasions-grid" id="occasionGrid">
+          <button class="occasion-chip" data-occasion="Casual">Casual</button>
+          <button class="occasion-chip" data-occasion="College">College</button>
+          <button class="occasion-chip" data-occasion="Office">Office</button>
+          <button class="occasion-chip" data-occasion="Party">Party</button>
+          <button class="occasion-chip" data-occasion="Wedding">Wedding</button>
+          <button class="occasion-chip" data-occasion="Dinner">Dinner</button>
+          <button class="occasion-chip" data-occasion="Date">Date</button>
+          <button class="occasion-chip" data-occasion="Vacation">Vacation</button>
+          <button class="occasion-chip" data-occasion="Traditional">Traditional</button>
+          <button class="occasion-chip" data-occasion="Formal">Formal</button>
+        </div>
+
+        <!-- Wardrobe Readiness Box -->
+        <div class="readiness-card">
+          <div class="readiness-info">
+            <span class="muted-label">Available Wardrobe</span>
+            <h4 id="syncWardrobeCount">0 items ready for styling</h4>
+          </div>
+          <div class="readiness-status" id="syncOccasionStatus">No occasion selected</div>
+        </div>
+
+        <!-- Main Action Trigger -->
+        <div class="sync-action-box">
+          <button id="syncOutfitBtn" class="btn btn-gold btn-large" onclick="syncOutfit()">
+            ✨ Sync My Outfit
+          </button>
+          <p class="helper-text">StyleSync analyzes only your owned items. No items are fabricated or bought.</p>
+        </div>
+
+        <!-- Animated Loading State -->
+        <div id="syncLoading" class="sync-loading hidden">
+          <div class="spinner"></div>
+          <h3>StyleSync is analyzing your wardrobe...</h3>
+          <p>Evaluating color harmonies, occasion alignment, and balanced accessory selection.</p>
+        </div>
+
+        <!-- OUTFIT RESULT CARD -->
+        <div id="outfitResultCard" class="outfit-result-card hidden">
+          <div class="result-header">
+            <div>
+              <span class="badge badge-gold" id="resultOccasionBadge">Occasion</span>
+              <h2 class="result-title">Your StyleSync Outfit</h2>
+            </div>
+            <div class="overall-score-pill">
+              <span class="score-num" id="resultOverallScore">--%</span>
+              <span class="score-sub">Match Score</span>
+            </div>
+          </div>
+
+          <!-- Compatibility Progress Bars -->
+          <div class="scores-panel">
+            <div class="score-metric">
+              <div class="metric-top"><span>Color Compatibility</span><strong id="scoreColor">--%</strong></div>
+              <div class="progress-bar"><div class="progress-fill bg-gold" id="barColor" style="width:0%"></div></div>
+            </div>
+            <div class="score-metric">
+              <div class="metric-top"><span>Style Compatibility</span><strong id="scoreStyle">--%</strong></div>
+              <div class="progress-bar"><div class="progress-fill bg-rose" id="barStyle" style="width:0%"></div></div>
+            </div>
+            <div class="score-metric">
+              <div class="metric-top"><span>Occasion Suitability</span><strong id="scoreOccasion">--%</strong></div>
+              <div class="progress-bar"><div class="progress-fill bg-charcoal" id="barOccasion" style="width:0%"></div></div>
+            </div>
+          </div>
+
+          <!-- Visual Outfit Composition Grid -->
+          <div class="curated-outfit-grid" id="curatedOutfitGrid">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Dynamic AI Styling Explanation -->
+          <div class="explanation-box">
+            <div class="explanation-icon">✦</div>
+            <div class="explanation-text" id="resultExplanation">
+              Explanation will load here...
+            </div>
+          </div>
+
+          <!-- Result Actions -->
+          <div class="result-actions">
+            <button class="btn btn-outline" id="btnToggleFavorite" onclick="toggleFavoriteCurrent()">
+              ♡ Add to Favorites
+            </button>
+            <button class="btn btn-primary" id="btnAddToChecklist" onclick="saveCurrentToChecklist()">
+              ＋ Add to Checklist
+            </button>
+            <button class="btn btn-secondary" onclick="generateAnotherOutfit()">
+              ↻ Generate Another
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. CHECKLIST SECTION -->
+    <section id="view-checklist" class="page-view">
+      <div class="section-header">
+        <div>
+          <h2>My Outfit Checklist</h2>
+          <p>Previously coordinated and explicitly confirmed looks ready to wear.</p>
+        </div>
+      </div>
+      <div class="checklist-grid" id="checklistGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- 5. FAVORITES SECTION -->
+    <section id="view-favorites" class="page-view">
+      <div class="section-header">
+        <div>
+          <h2>Saved Favorites</h2>
+          <p>Your highest rated, go-to fashion ensembles.</p>
+        </div>
+      </div>
+      <div class="favorites-grid" id="favoritesGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- 6. PROFILE SECTION -->
+    <section id="view-profile" class="page-view">
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar">S</div>
+          <div>
+            <h3 id="profileNameDisplay">Bunne Varsha</h3>
+            <p class="text-muted" id="profileEmailDisplay">user@stylesync.local</p>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="p-stat"><strong id="pWardrobeCount">0</strong><span>Wardrobe Items</span></div>
+          <div class="p-stat"><strong id="pSyncedCount">0</strong><span>Synced Looks</span></div>
+          <div class="p-stat"><strong id="pFavCount">0</strong><span>Favorites</span></div>
+        </div>
+        <hr class="divider"/>
+        <form id="profileForm" onsubmit="saveProfile(event)" class="profile-form">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="profName" value="Bunne Varsha" required />
+          </div>
+          <div class="form-group">
+            <label>Preferred Aesthetic</label>
+            <select id="profStyle">
+              <option value="Classic & Minimalist">Classic & Minimalist</option>
+              <option value="Smart Casual">Smart Casual</option>
+              <option value="Chic & Elegant">Chic & Elegant</option>
+              <option value="Streetwear / Relaxed">Streetwear / Relaxed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Dominant Wardrobe Palette</label>
+            <input type="text" id="profColors" value="White, Black, Beige, Navy, Gold" />
+          </div>
+          <button type="submit" class="btn btn-gold">Update Preferences</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ADD ITEM & AI DETECTION MODAL -->
+  <div id="addModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeAddModal()">×</button>
+      
+      <!-- Upload Step -->
+      <div id="modalUploadStep">
+        <h3>Add to My Wardrobe</h3>
+        <p class="text-muted">Upload a photo of clothing, footwear, handbag, or accessories you own.</p>
+        
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-icon">📷</div>
+          <p class="drop-title">Drag & drop your item photo here</p>
+          <p class="drop-subtitle">or click to browse from device (JPG, PNG, WEBP)</p>
+          <input type="file" id="fileInput" accept="image/*" class="file-input" />
+        </div>
+
+        <div class="or-separator"><span>OR USE SAMPLE PHOTO</span></div>
+        <div class="sample-pills">
+          <button type="button" class="sample-pill" onclick="loadSamplePreset('white-shirt')">White Shirt</button>
+          <button type="button" class="sample-pill" onclick="loadSamplePreset('blue-jeans')">Blue Denim</button>
+          <button type="button" class="sample-pill" onclick="loadSamplePreset('white-sneakers')">White Sneakers</button>
+          <button type="button" class="sample-pill" onclick="loadSamplePreset('black-handbag')">Black Handbag</button>
+          <button type="button" class="sample-pill" onclick="loadSamplePreset('silver-earrings')">Silver Earrings</button>
+          <button type="button" class="sample-pill" onclick="loadSamplePreset('black-dress')">Black Cocktail Dress</button>
+        </div>
+      </div>
+
+      <!-- Detection / Confirmation Step -->
+      <div id="modalConfirmStep" class="hidden">
+        <div class="step-badge">AI Detected Item</div>
+        <h3>Review & Confirm</h3>
+        <p class="text-muted">Verify the detected attributes before adding this item to your wardrobe.</p>
+
+        <div class="detection-layout">
+          <div class="detection-preview">
+            <img id="detectPreviewImg" src="" alt="Item Preview" />
+          </div>
+          <form id="confirmItemForm" onsubmit="confirmAndSaveItem(event)" class="detection-form">
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label>Item Name</label>
+                <input type="text" id="detectName" required />
+              </div>
+              <div class="form-group flex-1">
+                <label>Category</label>
+                <select id="detectCategory" onchange="updateSubcategories()" required>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Footwear">Footwear</option>
+                  <option value="Handbags">Handbags</option>
+                  <option value="Jewelry">Jewelry</option>
+                  <option value="Accessories">Accessories</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Subcategory</label>
+                <select id="detectSubcategory" required></select>
+              </div>
+              <div class="form-group">
+                <label>Primary Color</label>
+                <input type="text" id="detectColor" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Pattern</label>
+                <select id="detectPattern">
+                  <option value="Solid">Solid</option>
+                  <option value="Striped">Striped</option>
+                  <option value="Floral">Floral</option>
+                  <option value="Plaid">Plaid</option>
+                  <option value="Printed">Printed</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Style Aesthetic</label>
+                <select id="detectStyle">
+                  <option value="Casual">Casual</option>
+                  <option value="Smart Casual">Smart Casual</option>
+                  <option value="Formal">Formal</option>
+                  <option value="Traditional">Traditional</option>
+                  <option value="Elegant">Elegant</option>
+                  <option value="Sporty">Sporty</option>
+                  <option value="Party">Party</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Occasions (comma-separated)</label>
+                <input type="text" id="detectOccasions" value="Casual, College" required />
+              </div>
+              <div class="form-group">
+                <label>Season</label>
+                <select id="detectSeason">
+                  <option value="All Season">All Season</option>
+                  <option value="Summer">Summer</option>
+                  <option value="Winter">Winter</option>
+                  <option value="Monsoon / Spring">Monsoon / Spring</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="modal-footer-btns">
+              <button type="button" class="btn btn-outline" onclick="resetUploadStep()">Back to Upload</button>
+              <button type="submit" class="btn btn-gold">Confirm & Add to Wardrobe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
